@@ -1,0 +1,124 @@
+{
+  "images": [
+    {
+      "id": "nature-01",
+      "category": "nature",
+      "filename": "backgrounds/nature/nature-01.webp",
+      "alt": "Sunlight streaming through forest canopy"
+    },
+    {
+      "id": "nature-02",
+      "category": "nature",
+      "filename": "backgrounds/nature/nature-02.webp",
+      "alt": "Peaceful meadow at golden hour"
+    },
+    {
+      "id": "nature-03",
+      "category": "nature",
+      "filename": "backgrounds/nature/nature-03.webp",
+      "alt": "Autumn leaves in warm sunlight"
+    },
+    {
+      "id": "nature-04",
+      "category": "nature",
+      "filename": "backgrounds/nature/nature-04.webp",
+      "alt": "Misty forest at dawn"
+    },
+    {
+      "id": "galaxy-01",
+      "category": "galaxy",
+      "filename": "backgrounds/galaxy/galaxy-01.webp",
+      "alt": "Milky Way over mountain peaks"
+    },
+    {
+      "id": "galaxy-02",
+      "category": "galaxy",
+      "filename": "backgrounds/galaxy/galaxy-02.webp",
+      "alt": "Colorful nebula in deep space"
+    },
+    {
+      "id": "galaxy-03",
+      "category": "galaxy",
+      "filename": "backgrounds/galaxy/galaxy-03.webp",
+      "alt": "Star field with distant galaxies"
+    },
+    {
+      "id": "galaxy-04",
+      "category": "galaxy",
+      "filename": "backgrounds/galaxy/galaxy-04.webp",
+      "alt": "Aurora borealis under starry sky"
+    },
+    {
+      "id": "oceans-01",
+      "category": "oceans",
+      "filename": "backgrounds/oceans/oceans-01.webp",
+      "alt": "Calm ocean at sunset"
+    },
+    {
+      "id": "oceans-02",
+      "category": "oceans",
+      "filename": "backgrounds/oceans/oceans-02.webp",
+      "alt": "Tropical beach with crystal clear water"
+    },
+    {
+      "id": "oceans-03",
+      "category": "oceans",
+      "filename": "backgrounds/oceans/oceans-03.webp",
+      "alt": "Waves crashing on rocky shore"
+    },
+    {
+      "id": "oceans-04",
+      "category": "oceans",
+      "filename": "backgrounds/oceans/oceans-04.webp",
+      "alt": "Peaceful bay at sunrise"
+    },
+    {
+      "id": "mountains-01",
+      "category": "mountains",
+      "filename": "backgrounds/mountains/mountains-01.webp",
+      "alt": "Snow-capped mountain peaks at dawn"
+    },
+    {
+      "id": "mountains-02",
+      "category": "mountains",
+      "filename": "backgrounds/mountains/mountains-02.webp",
+      "alt": "Mountain valley with morning mist"
+    },
+    {
+      "id": "mountains-03",
+      "category": "mountains",
+      "filename": "backgrounds/mountains/mountains-03.webp",
+      "alt": "Majestic mountain reflected in still lake"
+    },
+    {
+      "id": "mountains-04",
+      "category": "mountains",
+      "filename": "backgrounds/mountains/mountains-04.webp",
+      "alt": "Alpine meadow with mountain backdrop"
+    },
+    {
+      "id": "underwater-01",
+      "category": "underwater",
+      "filename": "backgrounds/underwater/underwater-01.webp",
+      "alt": "Colorful coral reef with tropical fish"
+    },
+    {
+      "id": "underwater-02",
+      "category": "underwater",
+      "filename": "backgrounds/underwater/underwater-02.webp",
+      "alt": "Sunlight rays piercing through ocean water"
+    },
+    {
+      "id": "underwater-03",
+      "category": "underwater",
+      "filename": "backgrounds/underwater/underwater-03.webp",
+      "alt": "Sea turtle gliding through blue waters"
+    },
+    {
+      "id": "underwater-04",
+      "category": "underwater",
+      "filename": "backgrounds/underwater/underwater-04.webp",
+      "alt": "Vibrant underwater seascape"
+    }
+  ]
+}

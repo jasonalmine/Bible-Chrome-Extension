@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Extension Icons</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 2rem;
+      background: #2a2520;
+      color: #f5ebe0;
+    }
+    .icon-row {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      align-items: center;
+    }
+    canvas {
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background: #a67c52;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover {
+      background: #8b5a3c;
+    }
+    .instructions {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 0.5rem;
+    }
+    code {
+      background: rgba(166, 124, 82, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Extension Icon Generator</h1>
+  <p>Click each button to download the icon, then save to the icons folder.</p>
+
+  <div class="icon-row">
+    <canvas id="icon-16" width="16" height="16"></canvas>
+    <button onclick="download('icon-16', 16)">Download 16x16</button>
+  </div>
+  <div class="icon-row">
+    <canvas id="icon-32" width="32" height="32"></canvas>
+    <button onclick="download('icon-32', 32)">Download 32x32</button>
+  </div>
+  <div class="icon-row">
+    <canvas id="icon-48" width="48" height="48"></canvas>
+    <button onclick="download('icon-48', 48)">Download 48x48</button>
+  </div>
+  <div class="icon-row">
+    <canvas id="icon-128" width="128" height="128"></canvas>
+    <button onclick="download('icon-128', 128)">Download 128x128</button>
+  </div>
+
+  <div class="instructions">
+    <h3>Instructions:</h3>
+    <ol>
+      <li>Click each download button above</li>
+      <li>Save the files as: icon-16.png, icon-32.png, icon-48.png, icon-128.png</li>
+      <li>Place them in the <code>images/icons/</code> folder</li>
+      <li>Reload the extension in Chrome to see the new icons</li>
+    </ol>
+  </div>
+
+  <script>
+    function drawIcon(canvas, size) {
+      const ctx = canvas.getContext('2d');
+      const s = size; // shorthand
+
+      // Clear canvas
+      ctx.clearRect(0, 0, s, s);
+
+      // Background gradient (warm earth tones)
+      const bgGradient = ctx.createLinearGradient(0, 0, s, s);
+      bgGradient.addColorStop(0, '#c9956c');
+      bgGradient.addColorStop(0.5, '#a67c52');
+      bgGradient.addColorStop(1, '#8b5a3c');
+
+      // Draw rounded rectangle background
+      const radius = s * 0.22;
+      const padding = s * 0.03;
+      ctx.beginPath();
+      ctx.roundRect(padding, padding, s - padding * 2, s - padding * 2, radius);
+      ctx.fillStyle = bgGradient;
+      ctx.fill();
+
+      // Add subtle top highlight
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(padding, padding, s - padding * 2, s - padding * 2, radius);
+      ctx.clip();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.beginPath();
+      ctx.ellipse(s * 0.5, s * -0.1, s * 0.5, s * 0.4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Book center position
+      const cx = s * 0.5;
+      const cy = s * 0.47;
+
+      // Book dimensions
+      const bookWidth = s * 0.6;
+      const bookHeight = s * 0.45;
+      const pageSpread = bookWidth * 0.5;
+
+      // Page gradient
+      const pageGradient = ctx.createLinearGradient(0, cy - bookHeight * 0.4, 0, cy + bookHeight * 0.5);
+      pageGradient.addColorStop(0, '#fffaf5');
+      pageGradient.addColorStop(1, '#f5ebe0');
+
+      // Draw shadow under book
+      if (size >= 32) {
+        ctx.fillStyle = 'rgba(107, 68, 35, 0.25)';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + bookHeight * 0.55, pageSpread * 0.7, s * 0.045, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Left page
+      ctx.fillStyle = pageGradient;
+      ctx.beginPath();
+      ctx.moveTo(cx - s * 0.03, cy - bookHeight * 0.4);
+      ctx.bezierCurveTo(
+        cx - pageSpread * 0.3, cy - bookHeight * 0.45,
+        cx - pageSpread * 0.9, cy - bookHeight * 0.35,
+        cx - pageSpread, cy - bookHeight * 0.25
+      );
+      ctx.lineTo(cx - pageSpread, cy + bookHeight * 0.45);
+      ctx.bezierCurveTo(
+        cx - pageSpread * 0.9, cy + bookHeight * 0.5,
+        cx - pageSpread * 0.3, cy + bookHeight * 0.45,
+        cx - s * 0.03, cy + bookHeight * 0.5
+      );
+      ctx.closePath();
+      ctx.fill();
+
+      // Right page
+      ctx.beginPath();
+      ctx.moveTo(cx + s * 0.03, cy - bookHeight * 0.4);
+      ctx.bezierCurveTo(
+        cx + pageSpread * 0.3, cy - bookHeight * 0.45,
+        cx + pageSpread * 0.9, cy - bookHeight * 0.35,
+        cx + pageSpread, cy - bookHeight * 0.25
+      );
+      ctx.lineTo(cx + pageSpread, cy + bookHeight * 0.45);
+      ctx.bezierCurveTo(
+        cx + pageSpread * 0.9, cy + bookHeight * 0.5,
+        cx + pageSpread * 0.3, cy + bookHeight * 0.45,
+        cx + s * 0.03, cy + bookHeight * 0.5
+      );
+      ctx.closePath();
+      ctx.fill();
+
+      // Center spine
+      const spineGradient = ctx.createLinearGradient(cx - s * 0.04, 0, cx + s * 0.04, 0);
+      spineGradient.addColorStop(0, '#e8ddd0');
+      spineGradient.addColorStop(0.5, '#d4c4b0');
+      spineGradient.addColorStop(1, '#e8ddd0');
+
+      ctx.fillStyle = spineGradient;
+      ctx.beginPath();
+      ctx.moveTo(cx - s * 0.03, cy - bookHeight * 0.4);
+      ctx.quadraticCurveTo(cx, cy - bookHeight * 0.3, cx, cy + bookHeight * 0.5);
+      ctx.quadraticCurveTo(cx, cy - bookHeight * 0.3, cx + s * 0.03, cy - bookHeight * 0.4);
+      ctx.lineTo(cx + s * 0.03, cy + bookHeight * 0.5);
+      ctx.lineTo(cx - s * 0.03, cy + bookHeight * 0.5);
+      ctx.closePath();
+      ctx.fill();
+
+      // Text lines (only for larger icons)
+      if (size >= 48) {
+        ctx.fillStyle = 'rgba(201, 168, 124, 0.5)';
+        const lineHeight = s * 0.055;
+        const lineStartY = cy - bookHeight * 0.15;
+
+        // Left page lines
+        for (let i = 0; i < 5; i++) {
+          const lineWidth = s * (0.12 + Math.random() * 0.06);
+          const y = lineStartY + i * lineHeight;
+          ctx.fillRect(cx - pageSpread * 0.85, y, lineWidth, s * 0.015);
+        }
+
+        // Right page lines
+        for (let i = 0; i < 5; i++) {
+          const lineWidth = s * (0.12 + Math.random() * 0.06);
+          const y = lineStartY + i * lineHeight;
+          ctx.fillRect(cx + pageSpread * 0.15, y, lineWidth, s * 0.015);
+        }
+      }
+    }
+
+    function download(id, size) {
+      const canvas = document.getElementById(id);
+      const link = document.createElement('a');
+      link.download = `icon-${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Draw all icons on load
+    window.onload = function() {
+      [16, 32, 48, 128].forEach(size => {
+        const canvas = document.getElementById(`icon-${size}`);
+        drawIcon(canvas, size);
+      });
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Background Images</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 2rem;
+      background: #1a1a2e;
+      color: white;
+    }
+    .category {
+      margin-bottom: 2rem;
+    }
+    .category h2 {
+      margin-bottom: 1rem;
+    }
+    .images {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    .image-card {
+      text-align: center;
+    }
+    canvas {
+      width: 200px;
+      height: 112px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 0.5rem;
+    }
+    button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    button:hover {
+      background: #4f46e5;
+    }
+    .instructions {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Background Image Generator</h1>
+  <p>These are placeholder gradients. For production, replace with real photos from Unsplash or Pexels.</p>
+
+  <div id="categories"></div>
+
+  <div class="instructions">
+    <h3>For Production:</h3>
+    <ol>
+      <li>Download high-quality images from <a href="https://unsplash.com" style="color:#a5b4fc">Unsplash</a> or <a href="https://pexels.com" style="color:#a5b4fc">Pexels</a></li>
+      <li>Resize to 1920x1080</li>
+      <li>Convert to WebP format (use <a href="https://squoosh.app" style="color:#a5b4fc">Squoosh</a>)</li>
+      <li>Keep file size under 300KB</li>
+      <li>Save with the naming convention: category-01.webp, category-02.webp, etc.</li>
+    </ol>
+  </div>
+
+  <script>
+    const categories = {
+      nature: {
+        colors: [
+          ['#2d5016', '#4a7c23', '#6ba32e'], // Forest green
+          ['#f4a460', '#daa520', '#cd853f'], // Golden hour
+          ['#8b4513', '#d2691e', '#ff8c00'], // Autumn
+          ['#696969', '#87ceeb', '#98fb98']  // Misty
+        ]
+      },
+      galaxy: {
+        colors: [
+          ['#0c0c1e', '#1a1a4e', '#4a0080'], // Deep space
+          ['#1a0a2e', '#4a148c', '#7b1fa2'], // Nebula
+          ['#000033', '#191970', '#00008b'], // Star field
+          ['#001a00', '#004d00', '#1a0033']  // Aurora
+        ]
+      },
+      oceans: {
+        colors: [
+          ['#ff6b35', '#f7931e', '#1e90ff'], // Sunset
+          ['#00ced1', '#40e0d0', '#00bfff'], // Tropical
+          ['#2f4f4f', '#708090', '#87ceeb'], // Rocky shore
+          ['#ffd700', '#87ceeb', '#4169e1']  // Sunrise bay
+        ]
+      },
+      mountains: {
+        colors: [
+          ['#f0f8ff', '#b0c4de', '#4682b4'], // Snow peaks
+          ['#696969', '#a9a9a9', '#87ceeb'], // Valley mist
+          ['#4682b4', '#87ceeb', '#f0f8ff'], // Lake reflection
+          ['#90ee90', '#228b22', '#87ceeb']  // Alpine meadow
+        ]
+      },
+      underwater: {
+        colors: [
+          ['#006994', '#00bfff', '#ff6347'], // Coral reef
+          ['#001a33', '#004080', '#00bfff'], // Sunlight rays
+          ['#008080', '#20b2aa', '#00ced1'], // Sea turtle
+          ['#483d8b', '#4169e1', '#00ced1']  // Seascape
+        ]
+      }
+    };
+
+    const container = document.getElementById('categories');
+
+    Object.entries(categories).forEach(([category, data]) => {
+      const categoryDiv = document.createElement('div');
+      categoryDiv.className = 'category';
+      categoryDiv.innerHTML = `<h2>${category.charAt(0).toUpperCase() + category.slice(1)}</h2>`;
+
+      const imagesDiv = document.createElement('div');
+      imagesDiv.className = 'images';
+
+      data.colors.forEach((colors, index) => {
+        const num = String(index + 1).padStart(2, '0');
+        const id = `${category}-${num}`;
+
+        const card = document.createElement('div');
+        card.className = 'image-card';
+        card.innerHTML = `
+          <canvas id="${id}" width="1920" height="1080"></canvas>
+          <br>
+          <button onclick="download('${id}', '${category}', '${num}')">Download ${category}-${num}</button>
+        `;
+        imagesDiv.appendChild(card);
+
+        // Draw gradient
+        setTimeout(() => {
+          const canvas = document.getElementById(id);
+          const ctx = canvas.getContext('2d');
+
+          const gradient = ctx.createRadialGradient(
+            960, 540, 0,
+            960, 540, 1200
+          );
+          gradient.addColorStop(0, colors[0]);
+          gradient.addColorStop(0.5, colors[1]);
+          gradient.addColorStop(1, colors[2]);
+
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, 1920, 1080);
+
+          // Add some visual interest
+          ctx.globalAlpha = 0.1;
+          for (let i = 0; i < 50; i++) {
+            ctx.beginPath();
+            ctx.arc(
+              Math.random() * 1920,
+              Math.random() * 1080,
+              Math.random() * 100 + 20,
+              0,
+              Math.PI * 2
+            );
+            ctx.fillStyle = colors[Math.floor(Math.random() * 3)];
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }, 0);
+      });
+
+      categoryDiv.appendChild(imagesDiv);
+      container.appendChild(categoryDiv);
+    });
+
+    function download(id, category, num) {
+      const canvas = document.getElementById(id);
+      canvas.toBlob(blob => {
+        const link = document.createElement('a');
+        link.download = `${category}-${num}.webp`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      }, 'image/webp', 0.85);
+    }
+  </script>
+</body>
+</html>
