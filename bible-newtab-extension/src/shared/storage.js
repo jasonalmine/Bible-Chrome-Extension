@@ -77,6 +77,54 @@ export async function updateSettings(partial) {
 }
 
 /**
+ * Reset all settings to defaults
+ * @returns {Promise<object>} The default settings
+ */
+export async function resetSettings() {
+  await set(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
+  return { ...DEFAULT_SETTINGS };
+}
+
+/**
+ * Subscribe to settings changes from other contexts (popup <-> newtab)
+ * @param {function} callback - Called with (newSettings, changedKeys) when settings change
+ * @returns {function} Unsubscribe function
+ */
+export function onSettingsChange(callback) {
+  const listener = (changes, areaName) => {
+    if (areaName !== 'sync' || !changes[STORAGE_KEYS.SETTINGS]) return;
+
+    const newValue = changes[STORAGE_KEYS.SETTINGS].newValue;
+    const oldValue = changes[STORAGE_KEYS.SETTINGS].oldValue || {};
+
+    // Merge with defaults to ensure all keys exist
+    const newSettings = {
+      ...DEFAULT_SETTINGS,
+      ...newValue,
+      enabledCategories: {
+        ...DEFAULT_SETTINGS.enabledCategories,
+        ...(newValue?.enabledCategories || {})
+      }
+    };
+
+    // Determine which keys changed
+    const changedKeys = Object.keys(newSettings).filter(key => {
+      if (key === 'enabledCategories') {
+        return JSON.stringify(newSettings[key]) !== JSON.stringify(oldValue[key]);
+      }
+      return newSettings[key] !== oldValue[key];
+    });
+
+    if (changedKeys.length > 0) {
+      callback(newSettings, changedKeys);
+    }
+  };
+
+  chrome.storage.onChanged.addListener(listener);
+  return () => chrome.storage.onChanged.removeListener(listener);
+}
+
+/**
  * Add an item to a history array, maintaining max size
  * @param {string} historyKey - The history key
  * @param {string} itemId - The item ID to add

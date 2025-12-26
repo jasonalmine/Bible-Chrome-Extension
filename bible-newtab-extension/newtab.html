@@ -54,11 +54,11 @@
     </div>
 
     <div class="settings-content">
-      <!-- Theme Toggle -->
+      <!-- Appearance: Theme + Font Size -->
       <div class="settings-section">
-        <h3>Theme</h3>
-        <div class="theme-toggle-row">
-          <span>Toggle light/dark mode</span>
+        <h3>Appearance</h3>
+        <div class="setting-row">
+          <span class="setting-label">Theme</span>
           <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle theme">
             <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -76,6 +76,14 @@
             </svg>
           </button>
         </div>
+        <div class="setting-row">
+          <span class="setting-label">Font Size</span>
+          <div class="font-size-buttons">
+            <button class="font-size-btn" data-size="small">A</button>
+            <button class="font-size-btn active" data-size="medium">A</button>
+            <button class="font-size-btn" data-size="large">A</button>
+          </div>
+        </div>
       </div>
 
       <!-- Bible Translation -->
@@ -92,17 +100,7 @@
         </select>
       </div>
 
-      <!-- Font Size -->
-      <div class="settings-section">
-        <h3>Font Size</h3>
-        <div class="font-size-buttons">
-          <button class="font-size-btn" data-size="small">A</button>
-          <button class="font-size-btn active" data-size="medium">A</button>
-          <button class="font-size-btn" data-size="large">A</button>
-        </div>
-      </div>
-
-      <!-- Verse Mode -->
+      <!-- Verse Display -->
       <div class="settings-section">
         <h3>Verse Display</h3>
         <div class="radio-group">
@@ -119,46 +117,67 @@
         </div>
       </div>
 
-      <!-- Background Mode -->
+      <!-- Background (Combined: Mode + Source + Categories) -->
       <div class="settings-section">
-        <h3>Background Image</h3>
-        <div class="radio-group">
-          <label class="radio-label">
-            <input type="radio" name="backgroundMode" value="daily" checked>
-            <span class="radio-custom"></span>
-            <span class="radio-text">Daily image (same all day)</span>
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="backgroundMode" value="random">
-            <span class="radio-custom"></span>
-            <span class="radio-text">Random image (each tab)</span>
-          </label>
+        <h3>Background</h3>
+        <div class="setting-row">
+          <span class="setting-label">Refresh</span>
+          <div class="radio-group-inline">
+            <label class="radio-inline-label">
+              <input type="radio" name="backgroundMode" value="daily" checked>
+              <span>Daily</span>
+            </label>
+            <label class="radio-inline-label">
+              <input type="radio" name="backgroundMode" value="random">
+              <span>Each tab</span>
+            </label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Source</span>
+          <div class="radio-group-inline">
+            <label class="radio-inline-label">
+              <input type="radio" name="backgroundSource" value="unsplash" checked>
+              <span>Unsplash</span>
+            </label>
+            <label class="radio-inline-label">
+              <input type="radio" name="backgroundSource" value="custom">
+              <span>My photos</span>
+            </label>
+            <label class="radio-inline-label">
+              <input type="radio" name="backgroundSource" value="both">
+              <span>Mix</span>
+            </label>
+          </div>
+        </div>
+        <div class="category-toggles" id="categories-section">
+          <span class="setting-label">Categories</span>
+          <div class="category-chips">
+            <label class="chip">
+              <input type="checkbox" name="category-nature" checked>
+              <span>Nature</span>
+            </label>
+            <label class="chip">
+              <input type="checkbox" name="category-galaxy" checked>
+              <span>Galaxy</span>
+            </label>
+            <label class="chip">
+              <input type="checkbox" name="category-oceans" checked>
+              <span>Oceans</span>
+            </label>
+            <label class="chip">
+              <input type="checkbox" name="category-mountains" checked>
+              <span>Mountains</span>
+            </label>
+            <label class="chip">
+              <input type="checkbox" name="category-underwater" checked>
+              <span>Underwater</span>
+            </label>
+          </div>
         </div>
       </div>
 
-      <!-- Background Source -->
-      <div class="settings-section">
-        <h3>Image Source</h3>
-        <div class="radio-group">
-          <label class="radio-label">
-            <input type="radio" name="backgroundSource" value="unsplash" checked>
-            <span class="radio-custom"></span>
-            <span class="radio-text">Unsplash photos</span>
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="backgroundSource" value="custom">
-            <span class="radio-custom"></span>
-            <span class="radio-text">My photos only</span>
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="backgroundSource" value="both">
-            <span class="radio-custom"></span>
-            <span class="radio-text">Mix both</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Custom Images -->
+      <!-- My Photos -->
       <div class="settings-section">
         <h3>My Photos <span id="image-count" class="image-count">(0/10)</span></h3>
         <div class="custom-images-container">
@@ -178,36 +197,15 @@
         </div>
       </div>
 
-      <!-- Background Categories -->
-      <div class="settings-section" id="categories-section">
-        <h3>Unsplash Categories</h3>
-        <div class="toggle-group">
-          <label class="toggle-label">
-            <input type="checkbox" name="category-nature" checked>
-            <span class="toggle-switch"></span>
-            <span class="toggle-text">Nature</span>
-          </label>
-          <label class="toggle-label">
-            <input type="checkbox" name="category-galaxy" checked>
-            <span class="toggle-switch"></span>
-            <span class="toggle-text">Galaxy</span>
-          </label>
-          <label class="toggle-label">
-            <input type="checkbox" name="category-oceans" checked>
-            <span class="toggle-switch"></span>
-            <span class="toggle-text">Oceans</span>
-          </label>
-          <label class="toggle-label">
-            <input type="checkbox" name="category-mountains" checked>
-            <span class="toggle-switch"></span>
-            <span class="toggle-text">Mountains</span>
-          </label>
-          <label class="toggle-label">
-            <input type="checkbox" name="category-underwater" checked>
-            <span class="toggle-switch"></span>
-            <span class="toggle-text">Underwater</span>
-          </label>
-        </div>
+      <!-- Reset to Defaults -->
+      <div class="settings-section settings-section-reset">
+        <button id="reset-defaults-btn" class="reset-defaults-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reset to Defaults
+        </button>
       </div>
     </div>
   </div>

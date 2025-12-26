@@ -1,7 +1,7 @@
 // Shared constants for Bible Verse New Tab extension
 
 // API Rate Limiting
-export const MAX_DAILY_API_CALLS = 3;
+export const MAX_DAILY_API_CALLS = 5;
 export const MAX_FAVORITES = 20;
 export const MAX_VERSE_HISTORY = 20;
 export const MAX_IMAGE_HISTORY = 5;
@@ -14,7 +14,7 @@ export const DEFAULT_SETTINGS = {
   backgroundMode: 'daily',   // 'daily' | 'random'
   backgroundSource: 'unsplash', // 'unsplash' | 'custom' | 'both'
   theme: 'light',            // 'light' | 'dark'
-  translation: 'ESV',        // Bible translation (ESV default, NKJV fallback)
+  translation: 'NKJV',       // Bible translation
   fontSize: 'medium',        // 'small' | 'medium' | 'large'
   enabledCategories: {
     nature: true,
@@ -52,7 +52,7 @@ export const COPYRIGHT_NOTICES = {
 };
 
 // ChatGPT interpretation prompt template
-export const INTERPRETATION_PROMPT_TEMPLATE = `Please provide a thorough biblical interpretation of this verse:
+export const INTERPRETATION_PROMPT_TEMPLATE = `Please provide a brief biblical interpretation of this verse:
 
 "{{TEXT}}"
 — {{REFERENCE}} ({{TRANSLATION}})
@@ -77,7 +77,7 @@ Please follow these guidelines for your interpretation:
    - What theological truths are revealed?
 
 5. **Evangelical Christian Doctrine**:
-   - Interpret through the lens of orthodox, evangelical Christianity
+   - Interpret through the lens of evangelical Christianity
    - Affirm the authority and inerrancy of Scripture
    - Show how this aligns with core doctrines (Trinity, salvation by grace through faith, etc.)
 

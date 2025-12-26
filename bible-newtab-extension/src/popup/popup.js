@@ -12,7 +12,8 @@ import {
   getApiUsage,
   getVerseRotationIndex,
   set,
-  cacheDailyVerse
+  cacheDailyVerse,
+  onSettingsChange
 } from '../shared/storage.js';
 import {
   DEFAULT_SETTINGS,
@@ -50,6 +51,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Update refresh button with remaining API calls
   await updateRefreshButtonState();
+
+  // Listen for settings changes from other contexts (e.g., newtab settings panel)
+  onSettingsChange((newSettings, changedKeys) => {
+    currentSettings = newSettings;
+    updateSettingsUI();
+
+    // Apply theme if it changed
+    if (changedKeys.includes('theme')) {
+      applyTheme(newSettings.theme);
+    }
+
+    // Update font size if it changed
+    if (changedKeys.includes('fontSize')) {
+      const verseText = document.getElementById('popup-verse-text');
+      verseText.style.fontSize = getFontSize();
+    }
+  });
 });
 
 /**

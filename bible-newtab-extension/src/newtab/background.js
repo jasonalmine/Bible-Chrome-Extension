@@ -2,7 +2,14 @@
 
 import { getHistory, addToHistory, get, set } from '../shared/storage.js';
 import { getDailyIndex, getRandomIndexWithHistory } from '../utils/random.js';
-import { getBackendUrl, DEFAULT_BACKEND_URL } from '../utils/config.js';
+// Unsplash Source search terms for each category
+const UNSPLASH_SEARCH_TERMS = {
+  nature: 'nature,forest,peaceful',
+  galaxy: 'galaxy,stars,night-sky',
+  oceans: 'ocean,sea,beach',
+  mountains: 'mountains,landscape,peaks',
+  underwater: 'underwater,coral,reef'
+};
 import { getAllImages, getImageUrl, getRandomImage, getImageCount } from './imageDB.js';
 import { STORAGE_KEYS, MAX_IMAGE_HISTORY } from '../shared/constants.js';
 
@@ -85,54 +92,36 @@ function getDailyCategory(enabledCategories) {
 }
 
 /**
- * Fetch image from Unsplash API via backend
+ * Get an image from Unsplash Source (direct URL, no API key needed)
  * @param {string} mode - 'daily' or 'random'
  * @param {object} enabledCategories - Object with category: boolean
  * @returns {Promise<object|null>} Image object or null on failure
  */
-async function fetchFromBackend(baseUrl, mode, enabledCategories) {
-  const category = mode === 'daily'
-    ? getDailyCategory(enabledCategories)
-    : getRandomCategory(enabledCategories);
-
-  const apiUrl = new URL('/api/background-image', baseUrl);
-  apiUrl.searchParams.set('category', category);
-  apiUrl.searchParams.set('mode', mode);
-
-  const response = await fetch(apiUrl.toString());
-
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-
-  return {
-    id: data.id,
-    path: data.url,
-    alt: data.alt,
-    category: data.category,
-    photographer: data.photographer,
-    photographerUrl: data.photographerUrl,
-    isUnsplash: true
-  };
-}
-
 async function fetchUnsplashImage(mode, enabledCategories) {
   try {
-    const backendUrl = await getBackendUrl();
-    return await fetchFromBackend(backendUrl, mode, enabledCategories);
-  } catch (error) {
-    try {
-      const backendUrl = await getBackendUrl();
-      if (backendUrl !== DEFAULT_BACKEND_URL) {
-        return await fetchFromBackend(DEFAULT_BACKEND_URL, mode, enabledCategories);
-      }
-    } catch (fallbackError) {
-      console.warn('Failed to fetch Unsplash image from fallback:', fallbackError);
-    }
+    const category = mode === 'daily'
+      ? getDailyCategory(enabledCategories)
+      : getRandomCategory(enabledCategories);
 
-    console.warn('Failed to fetch Unsplash image:', error);
+    const query = UNSPLASH_SEARCH_TERMS[category] || UNSPLASH_SEARCH_TERMS.nature;
+
+    // For daily mode, use date as seed for consistent image; for random, use timestamp
+    const dateSeed = mode === 'daily'
+      ? new Date().toISOString().split('T')[0]
+      : Date.now();
+
+    // Unsplash Source URL - returns a random image matching the query
+    const imageUrl = `https://source.unsplash.com/1920x1080/?${query}&sig=${dateSeed}`;
+
+    return {
+      id: `unsplash-${category}-${dateSeed}`,
+      path: imageUrl,
+      alt: `${category} background`,
+      category: category,
+      isUnsplash: true
+    };
+  } catch (error) {
+    console.warn('Failed to create Unsplash URL:', error);
     return null;
   }
 }

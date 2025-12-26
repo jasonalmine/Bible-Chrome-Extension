@@ -1,8 +1,8 @@
 // Settings panel controller
 
-import { getSettings, updateSettings } from '../shared/storage.js';
+import { getSettings, updateSettings, onSettingsChange, resetSettings } from '../shared/storage.js';
 import { getAllImages, addImage, deleteImage, getThumbnailUrl, getImageCount } from './imageDB.js';
-import { MAX_CUSTOM_IMAGES } from '../shared/constants.js';
+import { MAX_CUSTOM_IMAGES, DEFAULT_SETTINGS } from '../shared/constants.js';
 
 let settingsPanel;
 let settingsOverlay;
@@ -18,6 +18,9 @@ let uploadLabel;
 let categoriesSection;
 
 const MAX_IMAGES = MAX_CUSTOM_IMAGES;
+
+// Flag to prevent feedback loops when settings change from external sources
+let isUpdatingFromExternal = false;
 
 /**
  * Initialize the settings panel
@@ -90,6 +93,35 @@ export function initSettings() {
 
   checkboxInputs.forEach(input => {
     input.addEventListener('change', saveSettings);
+  });
+
+  // Reset to defaults button
+  const resetBtn = document.getElementById('reset-defaults-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', handleResetToDefaults);
+  }
+
+  // Listen for settings changes from other contexts (e.g., popup)
+  onSettingsChange((newSettings, changedKeys) => {
+    // Prevent feedback loop when we made the change
+    if (isUpdatingFromExternal) return;
+
+    isUpdatingFromExternal = true;
+
+    // Apply theme if changed
+    if (changedKeys.includes('theme')) {
+      applyTheme(newSettings.theme);
+    }
+
+    // Apply font size if changed
+    if (changedKeys.includes('fontSize')) {
+      applyFontSize(newSettings.fontSize);
+    }
+
+    // Update UI controls to reflect new settings
+    updateSettingsUIFromExternal(newSettings);
+
+    isUpdatingFromExternal = false;
   });
 
   // Check if URL hash indicates we should open settings
@@ -165,7 +197,7 @@ async function loadSettingsToUI() {
 
   // Set translation select
   if (translationSelect) {
-    translationSelect.value = settings.translation || 'NKJV';
+    translationSelect.value = settings.translation;
   }
 
   // Set font size button active state
@@ -207,10 +239,12 @@ async function loadSettingsToUI() {
  * Save current UI state to settings
  */
 async function saveSettings() {
+  isUpdatingFromExternal = true;
+
   const verseMode = settingsPanel.querySelector('input[name="verseMode"]:checked')?.value || 'daily';
   const backgroundMode = settingsPanel.querySelector('input[name="backgroundMode"]:checked')?.value || 'daily';
   const backgroundSource = settingsPanel.querySelector('input[name="backgroundSource"]:checked')?.value || 'unsplash';
-  const translation = translationSelect?.value || 'NKJV';
+  const translation = translationSelect?.value || DEFAULT_SETTINGS.translation;
 
   // Get active font size
   const activeFontBtn = settingsPanel.querySelector('.font-size-btn.active');
@@ -245,6 +279,8 @@ async function saveSettings() {
     fontSize,
     enabledCategories
   });
+
+  isUpdatingFromExternal = false;
 }
 
 /**
@@ -387,6 +423,66 @@ async function handleDeleteImage(id) {
   } catch (error) {
     console.error('Failed to delete image:', error);
     alert('Failed to delete image');
+  }
+}
+
+/**
+ * Update UI controls from external settings change (no save triggered)
+ * @param {object} settings - The new settings object
+ */
+function updateSettingsUIFromExternal(settings) {
+  // Set translation select
+  if (translationSelect) {
+    translationSelect.value = settings.translation;
+  }
+
+  // Set font size button active state
+  fontSizeButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.size === settings.fontSize);
+  });
+
+  // Set verse mode radio
+  const verseModeRadio = settingsPanel.querySelector(`input[name="verseMode"][value="${settings.verseMode}"]`);
+  if (verseModeRadio) verseModeRadio.checked = true;
+
+  // Set background mode radio
+  const bgModeRadio = settingsPanel.querySelector(`input[name="backgroundMode"][value="${settings.backgroundMode}"]`);
+  if (bgModeRadio) bgModeRadio.checked = true;
+
+  // Set background source radio
+  const bgSourceRadio = settingsPanel.querySelector(`input[name="backgroundSource"][value="${settings.backgroundSource}"]`);
+  if (bgSourceRadio) bgSourceRadio.checked = true;
+
+  // Update categories visibility
+  updateCategoriesVisibility();
+
+  // Set category toggles
+  Object.entries(settings.enabledCategories).forEach(([category, enabled]) => {
+    const checkbox = settingsPanel.querySelector(`input[name="category-${category}"]`);
+    if (checkbox) checkbox.checked = enabled;
+  });
+}
+
+/**
+ * Handle reset to defaults button click
+ */
+async function handleResetToDefaults() {
+  if (!confirm('Reset all settings to defaults? This cannot be undone.')) {
+    return;
+  }
+
+  try {
+    const defaults = await resetSettings();
+
+    // Apply theme and font size immediately
+    applyTheme(defaults.theme);
+    applyFontSize(defaults.fontSize);
+
+    // Reload UI
+    await loadSettingsToUI();
+  } catch (error) {
+    console.error('Failed to reset settings:', error);
+    alert('Failed to reset settings. Please try again.');
   }
 }
 
