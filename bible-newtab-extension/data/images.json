@@ -25,6 +25,12 @@
       "alt": "Misty forest at dawn"
     },
     {
+      "id": "nature-05",
+      "category": "nature",
+      "filename": "backgrounds/nature/nature-05.webp",
+      "alt": "Serene nature landscape"
+    },
+    {
       "id": "galaxy-01",
       "category": "galaxy",
       "filename": "backgrounds/galaxy/galaxy-01.webp",
@@ -47,6 +53,12 @@
       "category": "galaxy",
       "filename": "backgrounds/galaxy/galaxy-04.webp",
       "alt": "Aurora borealis under starry sky"
+    },
+    {
+      "id": "galaxy-05",
+      "category": "galaxy",
+      "filename": "backgrounds/galaxy/galaxy-05.webp",
+      "alt": "Cosmic starfield"
     },
     {
       "id": "oceans-01",
@@ -73,6 +85,12 @@
       "alt": "Peaceful bay at sunrise"
     },
     {
+      "id": "oceans-05",
+      "category": "oceans",
+      "filename": "backgrounds/oceans/oceans-05.webp",
+      "alt": "Ocean waves and coastline"
+    },
+    {
       "id": "mountains-01",
       "category": "mountains",
       "filename": "backgrounds/mountains/mountains-01.webp",
@@ -97,6 +115,12 @@
       "alt": "Alpine meadow with mountain backdrop"
     },
     {
+      "id": "mountains-05",
+      "category": "mountains",
+      "filename": "backgrounds/mountains/mountains-05.webp",
+      "alt": "Mountain range vista"
+    },
+    {
       "id": "underwater-01",
       "category": "underwater",
       "filename": "backgrounds/underwater/underwater-01.webp",
@@ -119,6 +143,12 @@
       "category": "underwater",
       "filename": "backgrounds/underwater/underwater-04.webp",
       "alt": "Vibrant underwater seascape"
+    },
+    {
+      "id": "underwater-05",
+      "category": "underwater",
+      "filename": "backgrounds/underwater/underwater-05.webp",
+      "alt": "Deep ocean marine life"
     }
   ]
 }

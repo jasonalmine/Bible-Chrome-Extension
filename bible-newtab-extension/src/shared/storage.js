@@ -73,6 +73,14 @@ export async function updateSettings(partial) {
     }
   };
   await set(STORAGE_KEYS.SETTINGS, updated);
+
+  // Clear cached daily image if background-related settings changed
+  const backgroundKeys = ['backgroundMode', 'backgroundSource', 'enabledCategories'];
+  const backgroundChanged = backgroundKeys.some(key => key in partial);
+  if (backgroundChanged) {
+    await set('cached-daily-image', null);
+  }
+
   return updated;
 }
 

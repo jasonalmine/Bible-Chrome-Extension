@@ -1,16 +1,8 @@
-// Background image selection - supports local images, Unsplash API, and custom user images
+// Background image selection - supports local images and custom user images
 
 import { getHistory, addToHistory, get, set } from '../shared/storage.js';
 import { getDailyIndex, getRandomIndexWithHistory } from '../utils/random.js';
-// Unsplash Source search terms for each category
-const UNSPLASH_SEARCH_TERMS = {
-  nature: 'nature,forest,peaceful',
-  galaxy: 'galaxy,stars,night-sky',
-  oceans: 'ocean,sea,beach',
-  mountains: 'mountains,landscape,peaks',
-  underwater: 'underwater,coral,reef'
-};
-import { getAllImages, getImageUrl, getRandomImage, getImageCount } from './imageDB.js';
+import { getAllImages, getImageUrl, getImageCount } from './imageDB.js';
 import { STORAGE_KEYS, MAX_IMAGE_HISTORY } from '../shared/constants.js';
 
 let imagesData = null;
@@ -56,74 +48,14 @@ function filterByCategories(images, enabledCategories) {
 }
 
 /**
- * Get a random enabled category
- * @param {object} enabledCategories - Object with category: boolean
- * @returns {string} A random enabled category
+ * Unsplash Source was deprecated in 2023 - this function returns null
+ * to fall back to local images.
+ * @returns {Promise<null>} Always returns null
  */
-function getRandomCategory(enabledCategories) {
-  const enabled = Object.entries(enabledCategories)
-    .filter(([_, isEnabled]) => isEnabled)
-    .map(([category]) => category);
-
-  if (enabled.length === 0) {
-    return 'nature';
-  }
-
-  return enabled[Math.floor(Math.random() * enabled.length)];
-}
-
-/**
- * Get daily category based on date
- * @param {object} enabledCategories - Object with category: boolean
- * @returns {string} Today's category
- */
-function getDailyCategory(enabledCategories) {
-  const enabled = Object.entries(enabledCategories)
-    .filter(([_, isEnabled]) => isEnabled)
-    .map(([category]) => category);
-
-  if (enabled.length === 0) {
-    return 'nature';
-  }
-
-  const today = new Date().toISOString().split('T')[0];
-  const dayHash = today.split('-').reduce((acc, val) => acc + parseInt(val), 0);
-  return enabled[dayHash % enabled.length];
-}
-
-/**
- * Get an image from Unsplash Source (direct URL, no API key needed)
- * @param {string} mode - 'daily' or 'random'
- * @param {object} enabledCategories - Object with category: boolean
- * @returns {Promise<object|null>} Image object or null on failure
- */
-async function fetchUnsplashImage(mode, enabledCategories) {
-  try {
-    const category = mode === 'daily'
-      ? getDailyCategory(enabledCategories)
-      : getRandomCategory(enabledCategories);
-
-    const query = UNSPLASH_SEARCH_TERMS[category] || UNSPLASH_SEARCH_TERMS.nature;
-
-    // For daily mode, use date as seed for consistent image; for random, use timestamp
-    const dateSeed = mode === 'daily'
-      ? new Date().toISOString().split('T')[0]
-      : Date.now();
-
-    // Unsplash Source URL - returns a random image matching the query
-    const imageUrl = `https://source.unsplash.com/1920x1080/?${query}&sig=${dateSeed}`;
-
-    return {
-      id: `unsplash-${category}-${dateSeed}`,
-      path: imageUrl,
-      alt: `${category} background`,
-      category: category,
-      isUnsplash: true
-    };
-  } catch (error) {
-    console.warn('Failed to create Unsplash URL:', error);
-    return null;
-  }
+async function fetchUnsplashImage() {
+  // Unsplash Source (source.unsplash.com) was deprecated and shut down.
+  // Return null to trigger local image fallback.
+  return null;
 }
 
 /**
@@ -217,9 +149,9 @@ async function getCustomImage(mode) {
  * @param {string} source - 'unsplash' | 'custom' | 'both' (default: 'unsplash')
  * @returns {Promise<object>} Image object with path and metadata
  */
-export async function getBackgroundImage(mode, enabledCategories, source = 'unsplash') {
-  // For daily mode, check cache first
-  if (mode === 'daily') {
+export async function getBackgroundImage(mode, enabledCategories, source = 'unsplash', forceRefresh = false) {
+  // For daily mode, check cache first (unless forceRefresh is true)
+  if (mode === 'daily' && !forceRefresh) {
     const cached = await get('cached-daily-image');
     const today = new Date().toISOString().split('T')[0];
 
@@ -231,7 +163,11 @@ export async function getBackgroundImage(mode, enabledCategories, source = 'unsp
         (source === 'unsplash' && !isCustom) ||
         source === 'both';
 
-      if (sourceMatches) {
+      // Also verify category matches (for non-custom images)
+      const categoryMatches = isCustom ||
+        (cached.image.category && enabledCategories[cached.image.category] === true);
+
+      if (sourceMatches && categoryMatches) {
         return cached.image;
       }
     }
@@ -257,7 +193,7 @@ export async function getBackgroundImage(mode, enabledCategories, source = 'unsp
     }
 
     if (!image) {
-      image = await fetchUnsplashImage(mode, enabledCategories);
+      image = await fetchUnsplashImage();
 
       // Verify remote image loads
       if (image?.isUnsplash) {
@@ -276,7 +212,7 @@ export async function getBackgroundImage(mode, enabledCategories, source = 'unsp
     }
   } else {
     // Default: 'unsplash' - Try Unsplash API first
-    image = await fetchUnsplashImage(mode, enabledCategories);
+    image = await fetchUnsplashImage();
 
     // Verify remote image loads; fall back to local if blocked.
     if (image?.isUnsplash) {

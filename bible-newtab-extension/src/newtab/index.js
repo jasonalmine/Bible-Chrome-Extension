@@ -3,8 +3,8 @@
 import { getVerse, getCopyrightText } from '../shared/verse.js';
 import { getBackgroundImage, preloadImage } from './background.js';
 import { initSettings, applyTheme, applyFontSize } from './settings.js';
-import { getSettings } from '../shared/storage.js';
-import { buildInterpretationPrompt } from '../shared/constants.js';
+import { getSettings, onSettingsChange } from '../shared/storage.js';
+import { buildInterpretationPrompt, STORAGE_KEYS } from '../shared/constants.js';
 
 // DOM elements
 let backgroundContainer;
@@ -58,6 +58,33 @@ async function init() {
 
   // Initialize settings panel
   initSettings();
+
+  // Listen for verse cache changes from popup (when user clicks "New Verse")
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === 'sync' && changes[STORAGE_KEYS.CACHED_DAILY_VERSE]) {
+      const newCached = changes[STORAGE_KEYS.CACHED_DAILY_VERSE].newValue;
+      if (newCached?.verse && newCached.verse !== currentVerse) {
+        displayVerse(newCached.verse);
+      }
+    }
+  });
+
+  // Listen for background-related settings changes
+  onSettingsChange(async (newSettings, changedKeys) => {
+    const backgroundKeys = ['backgroundMode', 'backgroundSource', 'enabledCategories'];
+    const backgroundChanged = changedKeys.some(key => backgroundKeys.includes(key));
+
+    if (backgroundChanged) {
+      // Refresh the background with new settings (force refresh to bypass cache)
+      const bgImage = await getBackgroundImage(
+        newSettings.backgroundMode,
+        newSettings.enabledCategories,
+        newSettings.backgroundSource || 'unsplash',
+        true // forceRefresh
+      );
+      await applyBackground(bgImage);
+    }
+  });
 }
 
 /**
