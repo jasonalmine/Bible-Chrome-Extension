@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Bible Verse New Tab",
   "version": "1.3.0",
-  "description": "Transform every new tab into a moment of reflection with daily Bible verses, stunning backgrounds, and multiple translations including ESV, KJV, NIV, and more.",
+  "description": "Start each new tab with an inspiring Bible verse and beautiful backgrounds. Includes favorites, themes, and more.",
   "default_locale": "en",
   "chrome_url_overrides": {
     "newtab": "newtab.html"

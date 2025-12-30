@@ -1,4 +1,5 @@
 {
+  "name": "bible-verse-new-tab",
   "headers": [
     {
       "source": "/api/(.*)",

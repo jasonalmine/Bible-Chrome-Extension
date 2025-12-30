@@ -63,7 +63,7 @@ Bible Chrome Extension/
 ## Installation
 
 ### For Users
-Install from the [Chrome Web Store](https://chrome.google.com/webstore) (coming soon)
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/elbkjkbdmhneiedgifliimkfncibklnn)
 
 ### For Developers
 
